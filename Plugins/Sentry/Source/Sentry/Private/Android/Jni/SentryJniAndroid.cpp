@@ -23,6 +23,8 @@
 #include "UObject/GarbageCollection.h"
 #include "UObject/UObjectThreadContext.h"
 
+void InstallSentryCrashSignalHook();
+
 JNI_METHOD void Java_io_sentry_unreal_SentryBridgeJava_onConfigureScope(JNIEnv* env, jclass clazz, jlong callbackId, jobject scope)
 {
 	FGCScopeGuard GCScopeGuard;
@@ -44,6 +46,8 @@ JNI_METHOD void Java_io_sentry_unreal_SentryBridgeJava_onConfigureScope(JNIEnv* 
 
 JNI_METHOD jobject Java_io_sentry_unreal_SentryBridgeJava_onBeforeSend(JNIEnv* env, jclass clazz, jlong objAddr, jobject event, jobject hint)
 {
+	FPlatformMisc::LowLevelOutputDebugStringf( TEXT("[Yoko.Guo] Java_io_sentry_unreal_SentryBridgeJava_onBeforeSend : Line=%d"), __LINE__);
+	
 	if (FUObjectThreadContext::Get().IsRoutingPostLoad)
 	{
 		UE_LOG(LogSentrySdk, Log, TEXT("Executing `beforeSend` handler is not allowed during object post-loading."));
@@ -112,4 +116,9 @@ JNI_METHOD jfloat Java_io_sentry_unreal_SentryBridgeJava_onTracesSampler(JNIEnv*
 	// to avoid instantiating `java.lang.Double` object within this JNI callback a negative value is returned instead
 	// which should be interpreted as `null` in Java code to fallback to fixed sample rate value
 	return -1.0f;
+}
+
+JNI_METHOD void Java_io_sentry_unreal_SentryBridgeJava_nativeInstallCrashSignalHook(JNIEnv* env, jclass clazz)
+{
+	InstallSentryCrashSignalHook();
 }

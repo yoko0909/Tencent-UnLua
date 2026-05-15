@@ -15,6 +15,7 @@
 
 USentryEvent* USentryBeforeSendHandler::HandleBeforeSend_Implementation(USentryEvent* Event, USentryHint* Hint)
 {
+	UE_LOG(LogTemp, Display, TEXT("[Yoko.Guo] USentryBeforeSendHandler Line=%d HandleBeforeSend_Implementation"), __LINE__);
 	const USentrySettings* Settings = FSentryModule::Get().GetSettings();
 
 	if (Settings->EnableAutoLogAttachment && Hint != nullptr)
@@ -24,7 +25,9 @@ USentryEvent* USentryBeforeSendHandler::HandleBeforeSend_Implementation(USentryE
 #else
 		const FString LogFilePath = SentryFileUtils::GetGameLogPath();
 #endif
-
+		
+		UE_LOG(LogTemp, Display, TEXT("[Yoko.Guo] USentryBeforeSendHandler Line=%d HandleBeforeSend_Implementation LogFilePath is %s"), __LINE__, *LogFilePath);
+		
 		Hint->AddAttachment(
 			USentryLibrary::CreateSentryAttachmentWithPath(
 				LogFilePath,

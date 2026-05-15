@@ -30,6 +30,8 @@
 
 void FAndroidSentrySubsystem::InitWithSettings(const USentrySettings* settings, USentryBeforeSendHandler* beforeSendHandler, USentryBeforeBreadcrumbHandler* beforeBreadcrumbHandler, USentryTraceSampler* traceSampler)
 {
+	UE_LOG(LogTemp, Display, TEXT("[Yoko.Guo] FAndroidSentrySubsystem Line=%d InitWithSettings"), __LINE__);
+	
 	TSharedPtr<FJsonObject> SettingsJson = MakeShareable(new FJsonObject);
 	SettingsJson->SetStringField(TEXT("dsn"), settings->Dsn);
 	SettingsJson->SetStringField(TEXT("release"), settings->OverrideReleaseName
