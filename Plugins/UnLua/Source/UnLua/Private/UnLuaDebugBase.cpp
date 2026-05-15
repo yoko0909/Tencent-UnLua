@@ -686,6 +686,14 @@ namespace UnLua
             CallStack += DisplayInfo;
         }
 
+
+        lua_State* Coroutine = lua_tothread(L, 1);
+        if (Coroutine && Coroutine != G(L)->mainthread)
+        {
+            CallStack += TEXT("\nCoroutine stack : \n");
+            CallStack += GetLuaCallStack(Coroutine);
+        }
+
         //if (!bIncludeVariables)
         //{
         //    return CallStack;
