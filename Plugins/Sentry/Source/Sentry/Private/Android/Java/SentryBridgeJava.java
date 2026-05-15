@@ -3,6 +3,7 @@
 package io.sentry.unreal;
 
 import android.app.Activity;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -36,6 +37,7 @@ public class SentryBridgeJava {
 	public static native SentryEvent onBeforeSend(long handlerAddr, SentryEvent event, Hint hint);
 	public static native Breadcrumb onBeforeBreadcrumb(long handlerAddr, Breadcrumb breadcrumb, Hint hint);
 	public static native float onTracesSampler(long samplerAddr, SamplingContext samplingContext);
+	public static native void nativeInstallCrashSignalHook();
 
 	public static void init(Activity activity, final String settingsJsonStr, final long beforeSendHandler) {
 		SentryAndroid.init(activity, new Sentry.OptionsConfiguration<SentryAndroidOptions>() {
@@ -100,6 +102,8 @@ public class SentryBridgeJava {
 				}
 			}
 		});
+		Log.i("YokoCrashHook", "[Yoko.Guo] Installing crash signal hook after SentryAndroid.init");
+		nativeInstallCrashSignalHook();
 	}
 
 	public static void addBreadcrumb(final String message, final String category, final String type, final HashMap<String, String> data, final SentryLevel level) {

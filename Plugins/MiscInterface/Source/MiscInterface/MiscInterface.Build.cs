@@ -38,6 +38,7 @@ public class MiscInterface : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"Unlua",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
