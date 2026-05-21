@@ -2,6 +2,7 @@
 
 #include "AppleSentrySubsystem.h"
 
+#include "SentryAppleCrashHook.h"
 #include "SentryBreadcrumbApple.h"
 #include "SentryEventApple.h"
 #include "SentryScopeApple.h"
@@ -137,6 +138,8 @@ void FAppleSentrySubsystem::InitWithSettings(const USentrySettings* settings, US
 				};
 			}
 		}];
+
+		InstallSentryAppleCrashHook();
 
 		dispatch_group_leave(sentryDispatchGroup);
 	});
