@@ -29,6 +29,10 @@
 		{
 			"Name": "UnLuaTestSuite",
 			"Enabled": true
+		},
+		{
+			"Name": "LuaProtobuf",
+			"Enabled": false
 		}
 	]
 }
