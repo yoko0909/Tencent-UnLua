@@ -2,10 +2,13 @@
 
 #include "SentryAppleCrashHook.h"
 
+#include "SentryCrashLogAppender.h"
+
 #include "HAL/Platform.h"
 
 #if PLATFORM_IOS
 
+#include <os/log.h>
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
@@ -17,6 +20,12 @@
 namespace
 {
 static volatile sig_atomic_t GHookInstalled = 0;
+
+static os_log_t GetSentryAppleCrashHookLog()
+{
+	static os_log_t HookLog = os_log_create("com.hero.dna", "SentryCrashHook");
+	return HookLog;
+}
 
 static void WriteDiagnosticLine(const char* Message, unsigned long Length)
 {
@@ -44,6 +53,7 @@ static SentryCrashMonitorEventCallback GPreviousSentryCrashCallback = nullptr;
 static void DiagnosticSentryCrashCallback(SentryCrash_MonitorContext* MonitorContext)
 {
 	WriteDiagnosticLine(SentryCrashCallbackMessage, sizeof(SentryCrashCallbackMessage) - 1);
+	FSentryCrashLogAppender::AppendCrashInfo(TEXT("IOS"), 0);
 
 	if (GPreviousSentryCrashCallback != nullptr)
 	{
@@ -53,10 +63,13 @@ static void DiagnosticSentryCrashCallback(SentryCrash_MonitorContext* MonitorCon
 
 static void InstallSentryCrashCallbackHook()
 {
+	os_log_info(GetSentryAppleCrashHookLog(), "[Yoko.Guo] Installing iOS SentryCrash diagnostic callback");
 	WriteDiagnosticLine(SentryCrashCallbackInstallMessage, sizeof(SentryCrashCallbackInstallMessage) - 1);
 
 	GPreviousSentryCrashCallback = sentrycrashcm_getEventCallback();
 	sentrycrashcm_setEventCallback(DiagnosticSentryCrashCallback);
+
+	os_log_info(GetSentryAppleCrashHookLog(), "[Yoko.Guo] Installed iOS SentryCrash diagnostic callback");
 }
 
 #endif
@@ -136,11 +149,13 @@ static void ForwardToPreviousSignalAction(int Signal, siginfo_t* Info, void* Con
 static void DiagnosticSignalHandler(int Signal, siginfo_t* Info, void* Context)
 {
 	WriteDiagnosticLine(SignalFallbackMessage, sizeof(SignalFallbackMessage) - 1);
+	FSentryCrashLogAppender::AppendCrashInfo(TEXT("IOS"), Signal);
 	ForwardToPreviousSignalAction(Signal, Info, Context);
 }
 
 static void InstallSignalFallbackHook()
 {
+	os_log_info(GetSentryAppleCrashHookLog(), "[Yoko.Guo] Installing iOS crash signal diagnostic hook");
 	WriteDiagnosticLine(SignalFallbackInstallMessage, sizeof(SignalFallbackInstallMessage) - 1);
 
 	struct sigaction Action;
@@ -153,6 +168,8 @@ static void InstallSignalFallbackHook()
 	{
 		sigaction(GSignalHookStates[Index].Signal, &Action, &GSignalHookStates[Index].PreviousAction);
 	}
+
+	os_log_info(GetSentryAppleCrashHookLog(), "[Yoko.Guo] Installed iOS crash signal diagnostic hook");
 }
 
 #endif
@@ -162,8 +179,12 @@ void InstallSentryAppleCrashHook()
 {
 	if (GHookInstalled != 0)
 	{
+		os_log_info(GetSentryAppleCrashHookLog(), "[Yoko.Guo] iOS Sentry crash hook already installed");
 		return;
 	}
+
+	os_log_info(GetSentryAppleCrashHookLog(), "[Yoko.Guo] Installing iOS Sentry crash hook");
+	FSentryCrashLogAppender::InitExtLogFullPath();
 
 #if SENTRY_APPLE_CRASH_USE_SENTRYCRASH_CALLBACK
 	InstallSentryCrashCallbackHook();
@@ -172,6 +193,7 @@ void InstallSentryAppleCrashHook()
 #endif
 
 	GHookInstalled = 1;
+	os_log_info(GetSentryAppleCrashHookLog(), "[Yoko.Guo] Installed iOS Sentry crash hook");
 }
 
 #else
