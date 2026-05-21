@@ -35,6 +35,8 @@
 
 void FAppleSentrySubsystem::InitWithSettings(const USentrySettings* settings, USentryBeforeSendHandler* beforeSendHandler, USentryBeforeBreadcrumbHandler* beforeBreadcrumbHandler, USentryTraceSampler* traceSampler)
 {
+	UE_LOG(LogSentrySdk, Display, TEXT("[Yoko.Guo] FAppleSentrySubsystem::InitWithSettings entered"));
+
 	[SENTRY_APPLE_CLASS(PrivateSentrySDKOnly) setSdkName:@"sentry.cocoa.unreal"];
 
 	dispatch_group_t sentryDispatchGroup = dispatch_group_create();
@@ -139,7 +141,9 @@ void FAppleSentrySubsystem::InitWithSettings(const USentrySettings* settings, US
 			}
 		}];
 
+		UE_LOG(LogSentrySdk, Display, TEXT("[Yoko.Guo] Installing iOS Sentry crash hook"));
 		InstallSentryAppleCrashHook();
+		UE_LOG(LogSentrySdk, Display, TEXT("[Yoko.Guo] Installed iOS Sentry crash hook"));
 
 		dispatch_group_leave(sentryDispatchGroup);
 	});
