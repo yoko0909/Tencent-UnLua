@@ -2,9 +2,13 @@
 
 #include "SentryCrashLogAppender.h"
 #include "GenericPlatform/GenericPlatformOutputDevices.h"
+#include "HAL/FileManager.h"
+#include "Misc/Paths.h"
 
 #include "UnLuaModule.h"
 #include "UnLuaDebugBase.h"
+
+#include <errno.h>
 
 FString GExtLogFullPath = "";
 
@@ -62,6 +66,15 @@ void AddLuaInfoToLog(const char* LogFileFullName)
 
                 fclose(FilePtr);
             }
+            else
+            {
+                const int32 OpenError = errno;
+                FPlatformMisc::LowLevelOutputDebugStringf(
+                    TEXT("[Yoko.Guo] AddLuaInfoToLog : Line=%d fopen failed, errno=%d"),
+                    __LINE__,
+                    OpenError
+                );
+            }
 			
         }
     }
@@ -71,7 +84,37 @@ void FSentryCrashLogAppender::InitExtLogFullPath()
 {
     FPlatformMisc::LowLevelOutputDebugStringf( TEXT("[Yoko.Guo] InitExtLogFullPath : Line=%d"), __LINE__);
     
-    GExtLogFullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Logs"), TEXT("YokoCrashExtra.log")));
+    const FString LogDir = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Logs"));
+    const bool bCreatedLogDir = IFileManager::Get().MakeDirectory(*LogDir, true);
+    FPlatformMisc::LowLevelOutputDebugStringf(
+        TEXT("[Yoko.Guo] InitExtLogFullPath : Line=%d LogDir=%s MakeDirectory=%d"),
+        __LINE__,
+        *LogDir,
+        bCreatedLogDir ? 1 : 0
+    );
+    
+    GExtLogFullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*FPaths::Combine(LogDir, TEXT("YokoCrashExtra.log")));
+    
+    FILE* FilePtr = fopen(TCHAR_TO_UTF8(*GExtLogFullPath), "ab+");
+    if (nullptr != FilePtr)
+    {
+        FPlatformMisc::LowLevelOutputDebugStringf(
+            TEXT("[Yoko.Guo] InitExtLogFullPath : Line=%d touched GExtLogFullPath=%s"),
+            __LINE__,
+            *GExtLogFullPath
+        );
+        fclose(FilePtr);
+    }
+    else
+    {
+        const int32 OpenError = errno;
+        FPlatformMisc::LowLevelOutputDebugStringf(
+            TEXT("[Yoko.Guo] InitExtLogFullPath : Line=%d touch failed, errno=%d, GExtLogFullPath=%s"),
+            __LINE__,
+            OpenError,
+            *GExtLogFullPath
+        );
+    }
     
     FString logPath = FGenericPlatformOutputDevices::GetAbsoluteLogFilename();
     FString logFullPath = FPaths::ConvertRelativePathToFull(FGenericPlatformOutputDevices::GetAbsoluteLogFilename());
