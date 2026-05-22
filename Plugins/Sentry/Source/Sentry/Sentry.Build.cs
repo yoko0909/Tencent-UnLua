@@ -50,6 +50,7 @@ public class Sentry : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.IOS)
 		{
 			PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private", "Apple"));
+			PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private", "IOS"));
 
 			PublicAdditionalFrameworks.Add(new Framework("Sentry", Path.Combine(PlatformThirdPartyPath, "Sentry.embeddedframework.zip"), null, true));
 

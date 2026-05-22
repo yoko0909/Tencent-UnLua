@@ -2,7 +2,9 @@
 
 #include "AppleSentrySubsystem.h"
 
+#if PLATFORM_IOS
 #include "SentryAppleCrashHook.h"
+#endif
 #include "SentryBreadcrumbApple.h"
 #include "SentryEventApple.h"
 #include "SentryScopeApple.h"
@@ -141,9 +143,11 @@ void FAppleSentrySubsystem::InitWithSettings(const USentrySettings* settings, US
 			}
 		}];
 
+#if PLATFORM_IOS
 		UE_LOG(LogSentrySdk, Display, TEXT("[Yoko.Guo] Installing iOS Sentry crash hook"));
 		InstallSentryAppleCrashHook();
 		UE_LOG(LogSentrySdk, Display, TEXT("[Yoko.Guo] Installed iOS Sentry crash hook"));
+#endif
 
 		dispatch_group_leave(sentryDispatchGroup);
 	});
