@@ -39,7 +39,6 @@ public class Sentry : ModuleRules
 				"Projects",
 				"Json",
 				"HTTP",
-				"UnLua",
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
