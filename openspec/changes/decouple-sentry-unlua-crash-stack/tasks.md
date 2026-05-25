@@ -57,15 +57,15 @@
 
 ## 6. 静态验证与编译验证
 
-- [ ] 6.1 搜索 Sentry Build.cs，确认 Sentry 不再依赖 UnLua。
-- [ ] 6.2 搜索 MiscInterface Build.cs，确认 MiscInterface 同时依赖 Sentry 和 UnLua。
-- [ ] 6.3 搜索 Sentry 源码，确认不存在 UnLua 头文件、UnLua 模块 API 或 Lua 调用栈 API 引用。
-- [ ] 6.4 搜索 MiscInterface 源码，确认 Lua 栈采集逻辑迁移到 MiscInterface。
+- [x] 6.1 搜索 Sentry Build.cs，确认 Sentry 不再依赖 UnLua。
+- [x] 6.2 搜索 MiscInterface Build.cs，确认 MiscInterface 同时依赖 Sentry 和 UnLua。
+- [x] 6.3 搜索 Sentry 源码，确认不存在 UnLua 头文件、UnLua 模块 API 或 Lua 调用栈 API 引用。
+- [x] 6.4 搜索 MiscInterface 源码，确认 Lua 栈采集逻辑迁移到 MiscInterface。
 - [ ] 6.5 编译 Win64 Editor 目标，确认新 public header 和模块依赖可通过。
 - [ ] 6.6 编译 Android 目标或项目现有 Android 打包命令，确认 Android Sentry hook 可通过。
 - [ ] 6.7 编译 iOS 目标或项目现有 iOS 打包命令，确认 iOS Sentry hook 可通过。
-- [ ] 6.8 如果编译暴露模块名大小写或 include 路径问题，修正后重新运行对应编译。
-- [ ] 6.9 仅在有实际编译修正时提交编译修复。
+- [x] 6.8 如果编译暴露模块名大小写或 include 路径问题，修正后重新运行对应编译。
+- [x] 6.9 仅在有实际编译修正时提交编译修复。
 
 ## 7. 运行时验证
 
